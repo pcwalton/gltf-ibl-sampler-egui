@@ -1,0 +1,36 @@
+[package]
+name = "gltf-ibl-sampler-egui"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "1"
+derive_more = "0.99"
+image = "0.24"
+libc = "0.2"
+libc-stdhandle = "0.1"
+log = "0.4"
+rfd = "0.11"
+ron = "0.8"
+rust-i18n = "2"
+serde = "1"
+tempfile = "3"
+
+[dependencies.eframe]
+version = "0.22"
+features = ["persistence"]
+
+[dependencies.egui]
+version = "0.22"
+features = ["persistence"]
+
+[build-dependencies]
+bindgen = "0.66"
+cc = "1"
+cmake = "0.1"
+libloading = "0.8"
+
+[profile.dev.package.image]
+opt-level = 2

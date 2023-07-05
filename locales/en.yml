@@ -1,0 +1,202 @@
+---
+help.input.file: >-
+  This should be a panorama in the standard equirectangular projection, which
+  will be sampled to produce the skybox. Generally, `.exr` and `.hdr` files
+  are preferred, but any image file supported by the Rust `image` crate, plus
+  `.hdr`, will work. Typically, these images are twice as wide as they are
+  tall.
+  
+
+  As an alternative to clicking "Browse…", you can drag files into the window.
+
+help.input.max.image.size: >-
+  If the panorama is greater than this number of pixels on a side, it'll be
+  scaled to fit, preserving aspect ratio. Be warned that if you increase this
+  number above 4096, the default, then the image might be too big for your
+  GPU to handle.
+
+help.output.cubemap: >-
+  Set this to the `.ktx2` file you'd like the cubemap to be saved to.
+
+help.output.lut: >-
+  Set this to the `.png` file you'd like the associated lookup table to save
+  to.
+
+help.output.sample.count: >-
+  The number of rays to sample per texel of the output. Higher values increase
+  generation time but result in better quality.
+
+
+  If set to "Default", a reasonable number will automatically be chosen based
+  on the size of the skybox.
+
+help.output.lod.bias: >-
+  Forces lower levels of detail (if positive) or higher levels of detail (if
+  negative) to be chosen than the GPU otherwise would.
+
+
+  This is a floating-point value. If in doubt, leave it at zero.
+
+help.output.distribution: >-
+  The type of processing you want to perform on the cubemap.
+
+
+  Selecting None simply converts the panorama to a cubemap without doing any
+  extra processing. This is useful if you want to render the cubemap as a
+  skybox.
+
+
+  Selecting Lambertian generates a blurry diffuse cubemap that provides general
+  lighting.
+
+
+  Selecting GGX generates a sharp specular cubemap used for detailed
+  reflections on objects.
+
+help.output.cubemap.resolution: >-
+  The number of pixels that each face of the cube has on its side. If you
+  increase this number too high, your GPU might not be able to successfully
+  generate the cubemap.
+
+help.output.target.format: >-
+  The pixel format of the cubemap you want to generate.
+
+
+  Note that 8-bit cubemaps are not HDR, so you generally only want to use them
+  if your input panorama isn't HDR or you're rendering with an engine that
+  doesn't support HDR. 16-bit HDR is the default and, when uncompressed, uses
+  roughly half as much graphics memory as 32-bit HDR does.
+
+help.output.mipmap.levels: >-
+  The number of mipmap levels, which correspond to roughness values, to
+  generate. Higher values result in larger file size and memory usage but
+  result in more accurate rendering of the entire range of roughness values.
+
+
+  If set to "Default", a reasonable number of levels is automatically chosen
+  based on the size of the skybox.
+
+help.output.add: Adds a new output.
+
+help.output.remove: Deletes this output.
+
+help.button.generate: Runs the sampler in order to generate all outputs.
+
+help.button.reset: >-
+  Resets all settings to their defaults.
+
+
+  You can't undo this action.
+
+help.button.show.log: >-
+  Displays a log with verbose information on the sampling process for developers.
+
+
+  If generation fails, this information may help to diagnose the problem.
+
+output.header: "Output %{index}"
+
+input.file.type: HDR images
+
+input.preview.loading: Loading preview…
+
+input: "Input panorama:"
+
+input.max.image.size: "Maximum image size:"
+
+browse: "Browse…"
+
+button.generate: Generate
+
+button.reset: Reset
+
+button.show.log: Show Log
+
+output.progress.success.single: "✅ 1 output successfully written"
+
+output.progress.success.multi: "✅ %{count} outputs successfully written"
+
+output.progress.failure: "🗙 Failed to generate output %{index}: %{error}"
+
+output.cubemap: "Output cubemap:"
+
+output.lut: "Output lookup table (LUT):"
+
+output.distribution: "Distribution:"
+
+output.sample.count: "Sample count:"
+
+output.mipmap.levels: "Mipmap levels:"
+
+output.cubemap.resolution: "Cubemap resolution:"
+
+output.target.format: "Output pixel format:"
+
+output.lod.bias: "Level-of-detail bias:"
+
+output.overwrite.a: "The following output files will be overwritten:"
+
+output.overwrite.b: >
+  Do you want to overwrite them? You can't undo this action.
+
+output.overwrite.file: "%{index}: %{path}"
+
+app.title: glTF IBL Sampler
+
+output.numeric.default: Default
+
+output.numeric.custom: Custom
+
+output.file.ktx2: glTF KTX2 textures
+
+output.file.ktx1: glTF KTX1 textures
+
+output.file.png: PNG images
+
+log.window.title: Log
+
+output.error.vulkan.initialization.failed: "GPU initialization failed"
+
+output.error.vulkan.error: "A failure occurred on the GPU"
+
+output.error.input.panorama.file.not.found: "The input panorama file wasn't found"
+
+output.error.shader.file.not.found: "A needed shader file wasn't found"
+
+output.error.shader.compilation.failed: "The GPU driver failed to compile a needed shader"
+
+output.error.file.not.found: "The output file wasn't found"
+
+output.error.invalid.argument: "An internal error occurred"
+
+output.error.ktx.error: "An error occurred when writing the skybox texture"
+
+output.error.stb.error: "An error occurred when reading the input panorama image"
+
+output.error.output.cubemap.path.not.valid.utf8: >
+  Unsupported characters were found in the output cubemap name
+
+output.error.output.lut.path.not.valid.utf8: >
+  Unsupported characters were found in the output LUT name
+
+output.error.failed.to.load.input: "The input panorama file couldn't be loaded: %{error}"
+
+output.error.failed.to.reencode.input: "The input panorama file couldn't be encoded as a `.hdr`"
+
+output.distribution.none: "None (Base Color)"
+
+output.distribution.lambertian: "Lambertian (Diffuse)"
+
+output.distribution.ggx: "GGX (Specular)"
+
+output.distribution.charlie: Charlie
+
+output.target.format.8: "8-bit (`R8G8B8A8_UNORM`)"
+
+output.target.format.16: "16-bit HDR (`R16G16B16A16_SFLOAT`)"
+
+output.target.format.32: "32-bit HDR (`R32G32B32A32_SFLOAT`)"
+
+input.error.failed: Failed to load image
+
+input.error.bad.channel.count: Unknown number of channels

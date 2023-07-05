@@ -11,7 +11,9 @@ corresponding to different roughness values of the material.
 
 For the most part, using this tool is as easy as starting the app, dragging a
 panorama in `.exr` or `.hdr` format with an equirectangular projection into the
-window, and clicking Generate.  
+window, and clicking Generate.
+
+![Screenshot](https://github.com/pcwalton/gltf-ibl-sampler-egui/blob/master/etc/Screenshot.png?raw=true)
 
 ## Detailed description
 

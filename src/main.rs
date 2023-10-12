@@ -4,17 +4,18 @@
 
 use crate::generator::{FilterSettings, Job, OutputProgress};
 use eframe::{self, App, CreationContext, Frame as EFrame, IconData, NativeOptions, Storage};
+use egui::load::SizedTexture;
 use egui::text::LayoutJob;
 use egui::{
     Align, Button, CentralPanel, CollapsingHeader, Color32, ColorImage, ComboBox, Context,
-    FontData, FontDefinitions, FontFamily, FontId, Grid, Id, Layout, ProgressBar, RichText,
-    ScrollArea, TextEdit, TextFormat, TextureHandle, TextureOptions, TopBottomPanel, Ui, Vec2,
-    Window,
+    FontData, FontDefinitions, FontFamily, FontId, Grid, Id, ImageSource, Layout, ProgressBar,
+    RichText, ScrollArea, TextEdit, TextFormat, TextureHandle, TextureOptions, TopBottomPanel, Ui,
+    Vec2, Window,
 };
 use generator::{Distribution, InputReencodingStatus, Output, TargetFormat};
 use image::imageops::FilterType;
 use log::{warn, Level, LevelFilter, Log, Metadata, Record};
-use rfd::{FileDialog, MessageButtons, MessageDialog, MessageLevel};
+use rfd::{FileDialog, MessageButtons, MessageDialog, MessageDialogResult, MessageLevel};
 use rust_i18n::t;
 use std::collections::HashSet;
 use std::ffi::OsStr;
@@ -257,7 +258,7 @@ impl IblSamplerApp {
                     .clicked()
                 {
                     if let Some(path) = FileDialog::new()
-                        .add_filter(&t!("input.file.type"), &["hdr", "exr"])
+                        .add_filter(t!("input.file.type"), &["hdr", "exr"])
                         .pick_file()
                     {
                         self.set_input_path(ui.ctx(), path);
@@ -310,7 +311,10 @@ impl IblSamplerApp {
                         height = width * original_size.y / original_size.x;
                     }
 
-                    ui.image(texture_handle, Vec2::new(width, height));
+                    ui.image(ImageSource::Texture(SizedTexture::new(
+                        texture_handle.id(),
+                        Vec2::new(width, height),
+                    )));
                 }
             }
         }
@@ -685,11 +689,12 @@ impl IblSamplerApp {
         writeln!(&mut text, "{}", t!("output.overwrite.b")).unwrap();
 
         MessageDialog::new()
-            .set_title(&t!("app.title"))
+            .set_title(t!("app.title"))
             .set_level(MessageLevel::Warning)
             .set_buttons(MessageButtons::YesNo)
             .set_description(&text)
             .show()
+            == MessageDialogResult::Yes
     }
 }
 
@@ -792,7 +797,7 @@ fn output_file_picker(
         if ui.button(&t!("browse")).clicked() {
             let mut dialog = FileDialog::new();
             for (file_type, file_extension) in files {
-                dialog = dialog.add_filter(file_type, &[file_extension]);
+                dialog = dialog.add_filter(file_type.to_owned(), &[file_extension]);
             }
             if let Some(new_path) = dialog.save_file() {
                 *path = new_path;

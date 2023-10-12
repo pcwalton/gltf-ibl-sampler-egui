@@ -12,22 +12,22 @@ image = "0.24"
 libc = "0.2"
 libc-stdhandle = "0.1"
 log = "0.4"
-rfd = "0.11"
+rfd = "0.12"
 ron = "0.8"
 rust-i18n = "2"
 serde = "1"
 tempfile = "3"
 
 [dependencies.eframe]
-version = "0.22"
+version = "0.23"
 features = ["persistence"]
 
 [dependencies.egui]
-version = "0.22"
+version = "0.23"
 features = ["persistence"]
 
 [build-dependencies]
-bindgen = "0.66"
+bindgen = "0.68"
 cc = "1"
 
 [profile.dev.package.image]

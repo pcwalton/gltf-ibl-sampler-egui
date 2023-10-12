@@ -35,15 +35,14 @@ this tool as an all-in-one skybox generator for engines like [Bevy].
 
 ## Building
 
-This repository contains nested submodules, so make sure to either clone it
+This repository contains submodules, so make sure to either clone it
 with `git clone --recursive` or use
- `git submodule init && git submodule sync --recursive && git submodule update --recursive`
+`git submodule init && git submodule sync && git submodule update`
 after checking it out.
 
 As the glTF IBL Sampler is a C++ app instead of a pure Rust one, you'll need
-the [Vulkan SDK], [CMake], and a C compiler such as Xcode or Visual Studio to
-be installed in order to build this package. Cargo doesn't package those
-dependencies, unfortunately.
+a C++ compiler such as Xcode or Visual Studio to be installed in order to
+build this package. Note that the Vulkan SDK and CMake are no longer required.
 
 Note that the skybox sampling process is itself hardware-accelerated using
 Vulkan. So you'll need a Vulkan-capable GPU to usefully run this application.
@@ -52,15 +51,13 @@ memory limitations, so baking an entire 8K × 4K panoramic texture may not
 work. To avoid spurious failures stemming from this limitation, textures are
 resized to at most 4K pixels on each side by default.
 
-Once all dependencies are installed, you should be able to run the app using
-`cargo run --release`.
+You should be able to run the app using `cargo run --release`.
 
 ## Supported image formats
 
 The panorama can be stored either in any format that the Rust [`image`] crate
 supports, which notably includes `.exr`, or in `.hdr` format. The resulting
-textures can be stored in KTX1 or KTX2 format, while the BRDF lookup tables are
-stored in PNG format.
+textures can be stored in KTX2 format, while the BRDF lookup tables are stored in PNG format.
 
 ## License
 

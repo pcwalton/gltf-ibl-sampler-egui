@@ -473,6 +473,7 @@ impl IblSamplerApp {
                 output_index,
                 &[
                     TargetFormat::R8G8B8A8Unorm,
+                    TargetFormat::R16G16B16A16Sfloat,
                     TargetFormat::R32G32B32A32Sfloat,
                 ],
                 Some(&t!("help.output.target.format")),

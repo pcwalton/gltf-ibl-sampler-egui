@@ -6,28 +6,34 @@ use std::env;
 use std::path::{Path, PathBuf};
 
 fn main() {
+    println!("cargo:rerun-if-changed=build.rs");
+
     // Build the glTF IBL Sampler.
     let gltf_ibl_sampler_dir = Path::new("glTF-IBL-Sampler/").to_owned();
     let gltf_ibl_sampler_include_dir = gltf_ibl_sampler_dir.join("lib/include");
+    let gltf_ibl_sampler_src: Vec<_> = [
+        "FileHelper.cpp",
+        "format.cpp",
+        "ktxImage.cpp",
+        "lib.cpp",
+        "STBImage.cpp",
+        "vkHelper.cpp",
+    ]
+    .into_iter()
+    .map(|filename| gltf_ibl_sampler_dir.join("lib/source").join(filename))
+    .collect();
     Build::new()
-        .files(
-            [
-                "FileHelper.cpp",
-                "format.cpp",
-                "ktxImage.cpp",
-                "lib.cpp",
-                "STBImage.cpp",
-                "vkHelper.cpp",
-            ]
-            .into_iter()
-            .map(|filename| gltf_ibl_sampler_dir.join("lib/source").join(filename)),
-        )
+        .files(&gltf_ibl_sampler_src)
         .file(gltf_ibl_sampler_dir.join("thirdparty/volk/volk.c"))
         .include(&gltf_ibl_sampler_include_dir)
         .include(gltf_ibl_sampler_dir.join("thirdparty/stb"))
         .include(gltf_ibl_sampler_dir.join("thirdparty/volk"))
         .include(gltf_ibl_sampler_dir.join("thirdparty/Vulkan-Headers/include"))
         .compile("IBLLib");
+    for source_file in &gltf_ibl_sampler_src {
+        // FIXME: This should include headers too.
+        println!("cargo:rerun-if-changed={}", source_file.display());
+    }
 
     // Build stb_image` and `stb_image_write`.
     //
@@ -47,11 +53,11 @@ fn main() {
 
     // Generate Rust bindings for both the glTF IBL sampler and `stb_image_write`.
     let clang_args = vec![
-            "-x".to_owned(),
-            "c++".to_owned(),
-            "-iquote".to_owned(),
-            gltf_ibl_sampler_include_dir.to_string_lossy().into_owned(),
-        ];
+        "-x".to_owned(),
+        "c++".to_owned(),
+        "-iquote".to_owned(),
+        gltf_ibl_sampler_include_dir.to_string_lossy().into_owned(),
+    ];
     let bindings = Builder::default()
         .clang_args(clang_args)
         .header("wrapper.h")

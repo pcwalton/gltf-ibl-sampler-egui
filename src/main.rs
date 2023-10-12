@@ -7,8 +7,9 @@ use eframe::{self, App, CreationContext, Frame as EFrame, IconData, NativeOption
 use egui::text::LayoutJob;
 use egui::{
     Align, Button, CentralPanel, CollapsingHeader, Color32, ColorImage, ComboBox, Context,
-    FontFamily, FontId, Grid, Id, Layout, ProgressBar, RichText, ScrollArea, TextEdit, TextFormat,
-    TextureHandle, TextureOptions, TopBottomPanel, Ui, Vec2, Window,
+    FontData, FontDefinitions, FontFamily, FontId, Grid, Id, Layout, ProgressBar, RichText,
+    ScrollArea, TextEdit, TextFormat, TextureHandle, TextureOptions, TopBottomPanel, Ui, Vec2,
+    Window,
 };
 use generator::{Distribution, InputReencodingStatus, Output, TargetFormat};
 use image::imageops::FilterType;
@@ -41,6 +42,7 @@ const DEFAULT_IMAGE_PREVIEW_HEIGHT: f32 = 128.0;
 static INITIAL_WINDOW_SIZE: Vec2 = Vec2::new(480.0, 640.0);
 
 static ICON_PNG_DATA: &[u8] = include_bytes!("../Icon.png");
+static FONT_DATA: &[u8] = include_bytes!("../PublicSans-Regular.ttf");
 
 struct IblSamplerApp {
     job: Job,
@@ -102,6 +104,21 @@ impl IblSamplerApp {
             .and_then(|storage| storage.get_string("job"))
             .and_then(|encoded_job| ron::from_str(&encoded_job).ok())
             .unwrap_or_default();
+
+        // Load a custom font.
+        let mut font_definitions = FontDefinitions::default();
+        font_definitions
+            .font_data
+            .insert("Public Sans".to_owned(), FontData::from_static(FONT_DATA));
+
+        // Highest priority for proportional text.
+        font_definitions
+            .families
+            .entry(FontFamily::Proportional)
+            .or_default()
+            .insert(0, "Public Sans".to_owned());
+
+        ctx.egui_ctx.set_fonts(font_definitions);
 
         Box::new(IblSamplerApp {
             job,

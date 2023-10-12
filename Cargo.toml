@@ -29,8 +29,6 @@ features = ["persistence"]
 [build-dependencies]
 bindgen = "0.66"
 cc = "1"
-cmake = "0.1"
-libloading = "0.8"
 
 [profile.dev.package.image]
 opt-level = 2

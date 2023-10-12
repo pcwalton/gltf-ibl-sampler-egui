@@ -40,7 +40,7 @@ const DEFAULT_IMAGE_PREVIEW_HEIGHT: f32 = 128.0;
 
 static INITIAL_WINDOW_SIZE: Vec2 = Vec2::new(480.0, 640.0);
 
-static ICON_PNG_DATA: &'static [u8] = include_bytes!("../Icon.png");
+static ICON_PNG_DATA: &[u8] = include_bytes!("../Icon.png");
 
 struct IblSamplerApp {
     job: Job,
@@ -155,8 +155,7 @@ impl App for IblSamplerApp {
             if let Some(new_path) = input
                 .raw
                 .dropped_files
-                .iter()
-                .next()
+                .first()
                 .and_then(|path| path.path.clone())
             {
                 self.set_input_path(ctx, new_path);
@@ -322,23 +321,18 @@ impl IblSamplerApp {
                     OutputProgress::InProgress { .. }
                 );
                 if ui
-                    .add_enabled(!disabled, Button::new(&t!("button.generate")))
-                    .on_hover_text(&t!("help.button.generate"))
+                    .add_enabled(!disabled, Button::new(t!("button.generate")))
+                    .on_hover_text(t!("help.button.generate"))
                     .clicked()
+                    && self.check_for_overwrite_and_prompt_user()
                 {
-                    if self.check_for_overwrite_and_prompt_user() {
-                        generator::generate(
-                            ui.ctx(),
-                            self.job.clone(),
-                            self.output_progress.clone(),
-                        );
-                    }
+                    generator::generate(ui.ctx(), self.job.clone(), self.output_progress.clone());
                 }
 
                 // Reset button
                 if ui
                     .button(&t!("button.reset"))
-                    .on_hover_text(&t!("help.button.reset"))
+                    .on_hover_text(t!("help.button.reset"))
                     .clicked()
                 {
                     self.job = Job::default();
@@ -347,7 +341,7 @@ impl IblSamplerApp {
                 // Show Log button
                 if ui
                     .button(&t!("button.show.log"))
-                    .on_hover_text(&t!("help.button.show.log"))
+                    .on_hover_text(t!("help.button.show.log"))
                     .clicked()
                 {
                     self.log_window_open = true;
@@ -413,7 +407,7 @@ impl IblSamplerApp {
         let mut files_changed = false;
 
         let grid_id = format!("IblOutput{}", output_index);
-        Grid::new(&grid_id).num_columns(2).show(ui, |ui| {
+        Grid::new(grid_id).num_columns(2).show(ui, |ui| {
             if output_file_picker(
                 ui,
                 &mut output.out_cubemap.path,
@@ -501,7 +495,7 @@ impl IblSamplerApp {
 
     /// NB: When you call this, make sure to set `files_changed` to true.
     fn set_input_path(&mut self, ctx: &Context, input_path: PathBuf) {
-        self.job.input_path = input_path.clone();
+        self.job.input_path = input_path;
 
         self.load_input_preview(ctx);
     }
@@ -722,13 +716,13 @@ fn output_optional_numeric_value_ui(
 
     let response = ui.horizontal(|ui| {
         let mut custom_value = optional_number.is_some();
-        let mut combo_box = ComboBox::from_id_source(&format!("{}{}", id, output_index));
+        let mut combo_box = ComboBox::from_id_source(format!("{}{}", id, output_index));
 
         combo_box = if custom_value {
-            combo_box.selected_text(&t!("output.numeric.custom"))
+            combo_box.selected_text(t!("output.numeric.custom"))
         } else {
             combo_box
-                .selected_text(&t!("output.numeric.default"))
+                .selected_text(t!("output.numeric.default"))
                 .width(ui.available_width())
         };
 
@@ -824,7 +818,7 @@ fn output_enum<T>(
 {
     ui.label(label);
 
-    let response = ComboBox::from_id_source(&format!("Ibl{}{}", label, index))
+    let response = ComboBox::from_id_source(format!("Ibl{}{}", label, index))
         .selected_text(layout_text_with_code(&value.to_localized_string()))
         .width(ui.available_width())
         .show_ui(ui, |ui| {
@@ -854,7 +848,7 @@ fn output_distribution(ui: &mut Ui, output: &mut Output, index: usize) {
         .as_ref()
         .map(|filter_settings| filter_settings.distribution);
 
-    let response = ComboBox::from_id_source(&format!("IblOutputDistribution{}", index))
+    let response = ComboBox::from_id_source(format!("IblOutputDistribution{}", index))
         .selected_text(layout_text_with_code(&distribution.to_localized_string()))
         .width(ui.available_width())
         .show_ui(ui, |ui| {
@@ -927,7 +921,7 @@ impl Log for LogBuffer {
         };
 
         this.lines
-            .push(RichText::new(&format!("{} {}", icon, record.args().to_string())).color(color));
+            .push(RichText::new(format!("{} {}", icon, record.args().to_string())).color(color));
 
         if let Some(ref ctx) = this.ctx {
             ctx.request_repaint();

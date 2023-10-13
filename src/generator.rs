@@ -185,7 +185,7 @@ pub(crate) fn generate(ctx: &Context, job: Job, output_progress: Arc<Mutex<Outpu
     let output_count = job.outputs.len();
 
     thread::spawn(move || {
-        let input_path = match reencode_input_image(&ctx, &job, output_count, &*output_progress) {
+        let input_path = match reencode_input_image(&ctx, &job, output_count, &output_progress) {
             Ok(input_path) => input_path,
             Err(output_error) => {
                 report_output_error(&ctx, &output_progress, 0, output_error);
@@ -224,7 +224,7 @@ pub(crate) fn generate(ctx: &Context, job: Job, output_progress: Arc<Mutex<Outpu
             if output_index + 1 != output_count {
                 set_output_progress(
                     &ctx,
-                    &*output_progress,
+                    &output_progress,
                     OutputProgress::InProgress {
                         input_reencoding_status: InputReencodingStatus::Reencoded,
                         outputs_finished: output_index + 1,
@@ -273,7 +273,7 @@ fn reencode_input_image(
     // Open temporary file.
     let mut input_image_writer = InputImageWriter {
         temp_file: Builder::new()
-            .prefix(job.input_path.file_stem().unwrap_or(&OsStr::new(".tmp")))
+            .prefix(job.input_path.file_stem().unwrap_or(OsStr::new(".tmp")))
             .suffix(".hdr")
             .tempfile()
             .map_err(|error| OutputError::FailedToLoadInput(error.to_string()))?,
@@ -432,10 +432,8 @@ fn maybe_log_stdout_redirection_file(stdout_redirection_file: Option<PathBuf>) {
     // Load and log the contents of the temporary file.
     let Some(stdout_redirection_file) = stdout_redirection_file else { return };
     let Ok(file) = File::open(stdout_redirection_file) else { return };
-    for line in BufReader::new(file).lines() {
-        if let Ok(line) = line {
-            info!("{}", line);
-        }
+    for line in BufReader::new(file).lines().flatten() {
+        info!("{}", line);
     }
 }
 

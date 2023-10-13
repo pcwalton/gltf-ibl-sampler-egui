@@ -215,7 +215,7 @@ impl IblSamplerApp {
                 for output_index in 0..self.job.outputs.len() {
                     ui.with_layout(Layout::right_to_left(Align::Min), |ui| {
                         ui.group(|ui| {
-                            if output_index > 0
+                            if self.job.outputs.len() > 1
                                 && ui
                                     .button("🗑")
                                     .on_hover_text(layout_text_with_code(&t!("help.output.remove")))
@@ -473,6 +473,7 @@ impl IblSamplerApp {
                 output_index,
                 &[
                     TargetFormat::R8G8B8A8Unorm,
+                    TargetFormat::R9G9B9E5Ufloat,
                     TargetFormat::R16G16B16A16Sfloat,
                     TargetFormat::R32G32B32A32Sfloat,
                 ],
@@ -875,25 +876,27 @@ fn output_distribution(ui: &mut Ui, output: &mut Output, index: usize) {
         .selected_text(layout_text_with_code(&distribution.to_localized_string()))
         .width(ui.available_width())
         .show_ui(ui, |ui| {
+            let mut changed = false;
             for option in &[
                 None,
                 Some(Distribution::Lambertian),
                 Some(Distribution::Ggx),
                 Some(Distribution::Charlie),
             ] {
-                ui.selectable_value(
+                changed = ui.selectable_value(
                     &mut distribution,
                     *option,
                     layout_text_with_code(&option.to_localized_string()),
-                );
+                ).changed() || changed;
             }
+            changed
         });
 
-    let response = response
+    response
         .response
         .on_hover_text(layout_text_with_code(&t!("help.output.distribution")));
 
-    if response.changed() {
+    if response.inner == Some(true) {
         output.filter_settings = distribution.map(|distribution| FilterSettings {
             distribution,
             ..FilterSettings::default_for_index(index)

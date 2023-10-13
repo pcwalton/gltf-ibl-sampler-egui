@@ -2,12 +2,13 @@
 
 use crate::bindgen::{
     self, IBLLib_Distribution_Charlie, IBLLib_Distribution_GGX, IBLLib_Distribution_Lambertian,
-    IBLLib_Distribution_None, IBLLib_OutputFormat_R16G16B16A16_SFLOAT,
-    IBLLib_OutputFormat_R32G32B32A32_SFLOAT, IBLLib_OutputFormat_R8G8B8A8_UNORM, IBLLib_Result,
-    IBLLib_Result_FileNotFound, IBLLib_Result_InputPanoramaFileNotFound,
-    IBLLib_Result_InvalidArgument, IBLLib_Result_KtxError, IBLLib_Result_ShaderCompilationFailed,
-    IBLLib_Result_ShaderFileNotFound, IBLLib_Result_StbError, IBLLib_Result_Success,
-    IBLLib_Result_VulkanError, IBLLib_Result_VulkanInitializationFailed,
+    IBLLib_Distribution_None, IBLLib_OutputFormat_B9G9R9E5_UFLOAT,
+    IBLLib_OutputFormat_R16G16B16A16_SFLOAT, IBLLib_OutputFormat_R32G32B32A32_SFLOAT,
+    IBLLib_OutputFormat_R8G8B8A8_UNORM, IBLLib_Result, IBLLib_Result_FileNotFound,
+    IBLLib_Result_InputPanoramaFileNotFound, IBLLib_Result_InvalidArgument, IBLLib_Result_KtxError,
+    IBLLib_Result_ShaderCompilationFailed, IBLLib_Result_ShaderFileNotFound,
+    IBLLib_Result_StbError, IBLLib_Result_Success, IBLLib_Result_VulkanError,
+    IBLLib_Result_VulkanInitializationFailed,
 };
 use crate::ToLocalizedString;
 use anyhow::Error;
@@ -116,6 +117,7 @@ pub(crate) enum Distribution {
 #[repr(i32)]
 pub(crate) enum TargetFormat {
     R8G8B8A8Unorm = IBLLib_OutputFormat_R8G8B8A8_UNORM,
+    R9G9B9E5Ufloat = IBLLib_OutputFormat_B9G9R9E5_UFLOAT,
     #[default]
     R16G16B16A16Sfloat = IBLLib_OutputFormat_R16G16B16A16_SFLOAT,
     R32G32B32A32Sfloat = IBLLib_OutputFormat_R32G32B32A32_SFLOAT,
@@ -131,7 +133,9 @@ impl Default for Job {
         Self {
             input_path: PathBuf::new(),
             max_image_size: 4096,
-            outputs: (0..DEFAULT_OUTPUT_COUNT).map(Output::default_for_index).collect(),
+            outputs: (0..DEFAULT_OUTPUT_COUNT)
+                .map(Output::default_for_index)
+                .collect(),
         }
     }
 }
@@ -155,15 +159,15 @@ impl Output {
 
 impl FilterSettings {
     pub(crate) fn default_for_index(index: usize) -> Self {
-FilterSettings {
-                    distribution: match index {
-                        2 => Distribution::Ggx,
-                        3 => Distribution::Charlie,
-                        _ => Distribution::Lambertian,
-                    },
-                    sample_count: 1024,
-                    out_lut: OutputPath::new(),
-                }
+        FilterSettings {
+            distribution: match index {
+                2 => Distribution::Ggx,
+                3 => Distribution::Charlie,
+                _ => Distribution::Lambertian,
+            },
+            sample_count: 1024,
+            out_lut: OutputPath::new(),
+        }
     }
 }
 
@@ -566,6 +570,7 @@ impl ToLocalizedString for TargetFormat {
     fn to_localized_string(&self) -> String {
         match *self {
             TargetFormat::R8G8B8A8Unorm => t!("output.target.format.8"),
+            TargetFormat::R9G9B9E5Ufloat => t!("output.target.format.9995"),
             TargetFormat::R16G16B16A16Sfloat => t!("output.target.format.16"),
             TargetFormat::R32G32B32A32Sfloat => t!("output.target.format.32"),
         }

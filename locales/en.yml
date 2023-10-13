@@ -191,11 +191,13 @@ output.distribution.ggx: "GGX (Specular)"
 
 output.distribution.charlie: Charlie
 
-output.target.format.8: "8-bit (`R8G8B8A8_UNORM`)"
+output.target.format.8: "32 bits per pixel, LDR (`R8G8B8A8_UNORM`)"
 
-output.target.format.16: "16-bit HDR (`R16G16B16A16_SFLOAT`)"
+output.target.format.9995: "32 bits per pixel, HDR (`B9G9R9E5_UFLOAT_PACK32`)"
 
-output.target.format.32: "32-bit HDR (`R32G32B32A32_SFLOAT`)"
+output.target.format.16: "64 bits per pixel, HDR (`R16G16B16A16_SFLOAT`)"
+
+output.target.format.32: "128 bits per pixel, HDR (`R32G32B32A32_SFLOAT`)"
 
 input.error.failed: Failed to load image
 

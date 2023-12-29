@@ -85,7 +85,7 @@ pub(crate) enum InputReencodingStatus {
     Reencoded,
 }
 
-#[repr(i32)]
+#[repr(u32)]
 #[derive(Default, Display)]
 pub(crate) enum OutputError {
     VulkanInitializationFailed = IBLLib_Result_VulkanInitializationFailed,
@@ -430,8 +430,12 @@ fn maybe_log_stdout_redirection_file(stdout_redirection_file: Option<PathBuf>) {
     }
 
     // Load and log the contents of the temporary file.
-    let Some(stdout_redirection_file) = stdout_redirection_file else { return };
-    let Ok(file) = File::open(stdout_redirection_file) else { return };
+    let Some(stdout_redirection_file) = stdout_redirection_file else {
+        return;
+    };
+    let Ok(file) = File::open(stdout_redirection_file) else {
+        return;
+    };
     for line in BufReader::new(file).lines().flatten() {
         info!("{}", line);
     }

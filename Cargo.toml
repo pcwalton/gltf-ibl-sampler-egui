@@ -19,15 +19,15 @@ serde = "1"
 tempfile = "3"
 
 [dependencies.eframe]
-version = "0.23"
+version = "0.27"
 features = ["persistence"]
 
 [dependencies.egui]
-version = "0.23"
+version = "0.27"
 features = ["persistence"]
 
 [build-dependencies]
-bindgen = "0.68"
+bindgen = "0.69"
 cc = "1"
 
 [profile.dev.package.image]

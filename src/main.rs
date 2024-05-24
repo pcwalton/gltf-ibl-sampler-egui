@@ -3,14 +3,14 @@
 #![allow(non_upper_case_globals)]
 
 use crate::generator::{FilterSettings, Job, OutputProgress};
-use eframe::{self, App, CreationContext, Frame as EFrame, IconData, NativeOptions, Storage};
+use eframe::{self, icon_data, App, CreationContext, Frame as EFrame, NativeOptions, Storage};
 use egui::load::SizedTexture;
 use egui::text::LayoutJob;
 use egui::{
     Align, Button, CentralPanel, CollapsingHeader, Color32, ColorImage, ComboBox, Context,
     FontData, FontDefinitions, FontFamily, FontId, Grid, Id, ImageSource, Layout, ProgressBar,
     RichText, ScrollArea, TextEdit, TextFormat, TextureHandle, TextureOptions, TopBottomPanel, Ui,
-    Vec2, Window,
+    Vec2, ViewportBuilder, Window,
 };
 use generator::{Distribution, InputReencodingStatus, Output, TargetFormat};
 use image::imageops::FilterType;
@@ -82,11 +82,16 @@ fn main() {
     drop(log::set_logger(&LOG_BUFFER));
     log::set_max_level(LevelFilter::Info);
 
+    let mut viewport_builder = ViewportBuilder::default()
+        .with_inner_size(INITIAL_WINDOW_SIZE)
+        .with_app_id("GLTFIBLSampler".to_owned());
+
+    if let Ok(icon) = icon_data::from_png_bytes(ICON_PNG_DATA) {
+        viewport_builder = viewport_builder.with_icon(icon);
+    }
+
     let native_options = NativeOptions {
-        initial_window_size: Some(INITIAL_WINDOW_SIZE),
-        drag_and_drop_support: true,
-        app_id: Some("GLTFIBLSampler".to_owned()),
-        icon_data: IconData::try_from_png_bytes(ICON_PNG_DATA).ok(),
+        viewport: viewport_builder,
         ..NativeOptions::default()
     };
 
@@ -373,7 +378,9 @@ impl IblSamplerApp {
 
     #[allow(clippy::eq_op)]
     fn output_progress_ui(&mut self, ui: &mut Ui) {
-        let Ok(output_progress) = self.output_progress.lock() else { return };
+        let Ok(output_progress) = self.output_progress.lock() else {
+            return;
+        };
 
         match *output_progress {
             OutputProgress::NotStartedYet => {}
@@ -545,7 +552,7 @@ impl IblSamplerApp {
         thread::spawn(move || {
             let Ok(mut image) = generator::load_image(&input_path) else {
                 warn!("Failed to open preview: {:?}", input_path);
-                return
+                return;
             };
 
             image = image.resize_exact(
@@ -597,8 +604,11 @@ impl IblSamplerApp {
             }
         }
 
-        let Some(output_dir) = output_dir
-            .or_else(|| input_path.parent().map(|parent| parent.to_owned())) else { return };
+        let Some(output_dir) =
+            output_dir.or_else(|| input_path.parent().map(|parent| parent.to_owned()))
+        else {
+            return;
+        };
         let file_stem = input_path.file_stem().unwrap_or(OsStr::new(""));
 
         // Determine other filenames.
@@ -883,11 +893,14 @@ fn output_distribution(ui: &mut Ui, output: &mut Output, index: usize) {
                 Some(Distribution::Ggx),
                 Some(Distribution::Charlie),
             ] {
-                changed = ui.selectable_value(
-                    &mut distribution,
-                    *option,
-                    layout_text_with_code(&option.to_localized_string()),
-                ).changed() || changed;
+                changed = ui
+                    .selectable_value(
+                        &mut distribution,
+                        *option,
+                        layout_text_with_code(&option.to_localized_string()),
+                    )
+                    .changed()
+                    || changed;
             }
             changed
         });

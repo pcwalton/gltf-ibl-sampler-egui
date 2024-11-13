@@ -53,6 +53,9 @@ resized to at most 4K pixels on each side by default.
 
 You should be able to run the app using `cargo run --release`.
 
+### Windows
+If compilation fails with "'stdio.h' file not found", try running in `Developer Command Prompt for VS 2022/2019` or `Developer PowerShell for VS`.
+
 ## Supported image formats
 
 The panorama can be stored either in any format that the Rust [`image`] crate

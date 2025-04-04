@@ -85,7 +85,7 @@ pub(crate) enum InputReencodingStatus {
     Reencoded,
 }
 
-#[repr(i32)]
+#[repr(u32)]
 #[derive(Default, Display)]
 pub(crate) enum OutputError {
     VulkanInitializationFailed = IBLLib_Result_VulkanInitializationFailed,

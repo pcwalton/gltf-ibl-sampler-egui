@@ -29,6 +29,7 @@ fn main() {
         .include(gltf_ibl_sampler_dir.join("thirdparty/stb"))
         .include(gltf_ibl_sampler_dir.join("thirdparty/volk"))
         .include(gltf_ibl_sampler_dir.join("thirdparty/Vulkan-Headers/include"))
+        .cpp(true)
         .compile("IBLLib");
     for source_file in &gltf_ibl_sampler_src {
         // FIXME: This should include headers too.

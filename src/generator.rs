@@ -85,18 +85,18 @@ pub(crate) enum InputReencodingStatus {
     Reencoded,
 }
 
-#[repr(i32)]
+#[repr(u32)]
 #[derive(Default, Display)]
 pub(crate) enum OutputError {
-    VulkanInitializationFailed = IBLLib_Result_VulkanInitializationFailed,
-    VulkanError = IBLLib_Result_VulkanError,
-    InputPanoramaFileNotFound = IBLLib_Result_InputPanoramaFileNotFound,
-    ShaderFileNotFound = IBLLib_Result_ShaderFileNotFound,
-    ShaderCompilationFailed = IBLLib_Result_ShaderCompilationFailed,
-    FileNotFound = IBLLib_Result_FileNotFound,
-    InvalidArgument = IBLLib_Result_InvalidArgument,
-    KtxError = IBLLib_Result_KtxError,
-    StbError = IBLLib_Result_StbError,
+    VulkanInitializationFailed = IBLLib_Result_VulkanInitializationFailed as u32,
+    VulkanError = IBLLib_Result_VulkanError as u32,
+    InputPanoramaFileNotFound = IBLLib_Result_InputPanoramaFileNotFound as u32,
+    ShaderFileNotFound = IBLLib_Result_ShaderFileNotFound as u32,
+    ShaderCompilationFailed = IBLLib_Result_ShaderCompilationFailed as u32,
+    FileNotFound = IBLLib_Result_FileNotFound as u32,
+    InvalidArgument = IBLLib_Result_InvalidArgument as u32,
+    KtxError = IBLLib_Result_KtxError as u32,
+    StbError = IBLLib_Result_StbError as u32,
     #[default]
     OutputCubemapPathNotValidUTF8,
     OutputLutPathNotValidUTF8,
